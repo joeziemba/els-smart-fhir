@@ -1,0 +1,16 @@
+.patient-card {
+  list-style: none;
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+
+  padding: 1rem;
+  border: 1px solid lightgray;
+  margin-block-end: 1rem;
+  text-align: left;
+
+  &__name {
+    font-size: 1.25rem;
+  }
+}
