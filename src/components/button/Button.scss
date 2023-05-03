@@ -1,13 +1,19 @@
+@import "styles";
+
 .button {
   background-color: transparent;
-  border: 1px solid transparent;
+  color: $blue-600;
 
-  padding: 0.5rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+
+  padding: 0.33rem 0.75rem;
 
   transition: all 0.3s ease;
 
   &:hover {
     cursor: pointer;
-    background: #efefef;
+    background: $blue-600;
+    color: white;
   }
 }

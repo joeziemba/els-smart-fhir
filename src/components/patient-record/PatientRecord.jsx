@@ -1,7 +1,8 @@
-import { AgGridReact } from "ag-grid-react";
 import { useEffect, useState } from "react";
-import { FhirClient } from "../../utils/FhirClient";
-import { PatientUtil } from "../../utils/PatientUtil";
+import { ConditionTable } from "components/condition-table/ConditionTable";
+import { Loading } from "components/loading/Loading";
+import { FhirClient } from "utils/FhirClient";
+import { PatientUtil } from "utils/PatientUtil";
 
 import "./PatientRecord.scss";
 
@@ -27,7 +28,7 @@ export const PatientRecord = ({ selectedPatientId }) => {
       FhirClient.request(`Condition?patient=${selectedPatientId}`)
         .then((resp) => {
           console.log(resp);
-          setPatientConditions(resp.entry);
+          setPatientConditions(resp.entry ?? []);
         })
         .catch((err) => {
           console.log(err);
@@ -35,68 +36,31 @@ export const PatientRecord = ({ selectedPatientId }) => {
     }
   }, [patientConditions, selectedPatientId]);
 
-  if (!patient || !patientConditions) return <div>Loading...</div>;
-
-  const gridData = patientConditions.map((cond) => {
-    return {
-      name: cond.resource.code.text,
-      onset: cond.resource.onsetDateTime,
-      link: `https://pubmed.ncbi.nlm.nih.gov/?term=${cond.resource.code.text}`,
-    };
-  });
-
-  const columnDef = [
-    { field: "name", sortable: true, flex: 3, headerName: "Condition Name", initialSort: "asc" },
-    { field: "onset", sortable: true, flex: 1 },
-    {
-      field: "link",
-      flex: 1,
-      cellRenderer: (params) => (
-        <a href={params.value} target="_blank" rel="noreferrer">
-          View on PubMed <i className="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
-        </a>
-      ),
-    },
-  ];
+  if (!patient || !patientConditions) return <Loading />;
 
   return (
-    <div className="patient-record">
-      <div className="patient-record__header">Patient Record</div>
-      <div className="patient-record__details">
-        <div className="patient-record__detail-entry">
-          <span className="patient-record__label">Patient ID</span> {patient.id}
-        </div>
-        <div className="patient-record__detail-entry">
-          <span className="patient-record__label">Patient Name</span> {PatientUtil.getName(patient)}
-        </div>
-        <div className="patient-record__detail-entry">
-          <span className="patient-record__label">Gender</span>
-          {patient.gender}
-        </div>
-        <div className="patient-record__detail-entry">
-          <span className="patient-record__label">Date of Birth</span>
-          {patient.birthDate}
-        </div>
-      </div>
-      <div className="patient-record__conditions">
-        <span className="patient-record__label">Active Conditions</span>
-        {patientConditions.length ? (
-          <div className="ag-theme-alpine" style={{ width: "100%", overflow: "hidden" }}>
-            <AgGridReact
-              defaultColDef={{
-                resizable: true,
-                suppressMovable: true,
-                sizeColumnsToFit: true,
-                sortingOrder: ["asc", "desc"],
-              }}
-              columnDefs={columnDef}
-              rowData={gridData}
-              domLayout="autoHeight"
-            />
+    <div className="patient-record shadow-md mb-8">
+      <h1 className="patient-record__header">Patient Record</h1>
+      <div className="patient-record__body">
+        <div className="patient-record__details">
+          <div className="flex-1">
+            <div className="patient-record__label">Patient ID</div> {patient.id}
           </div>
-        ) : (
-          <div>No active conditions</div>
-        )}
+          <div className="flex-1">
+            <div className="patient-record__label">Patient Name</div> {PatientUtil.getName(patient)}
+          </div>
+          <div className="flex-1">
+            <div className="patient-record__label">Gender</div>
+            {patient.gender}
+          </div>
+          <div className="flex-1">
+            <div className="patient-record__label">Date of Birth</div>
+            {PatientUtil.getBirthDate(patient)}
+          </div>
+        </div>
+
+        <div className="patient-record__label">Active Conditions</div>
+        {patientConditions.length ? <ConditionTable conditions={patientConditions} /> : <div>No active conditions</div>}
       </div>
     </div>
   );
