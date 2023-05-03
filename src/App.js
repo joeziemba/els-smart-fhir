@@ -1,5 +1,7 @@
 import "./App.css";
-import { PatientList } from "./components/PatientList";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import { PatientList } from "./components/patient-list/PatientList";
 import { useState } from "react";
 import { PatientRecord } from "./components/patient-record/PatientRecord";
 import { TopBar } from "./components/top-bar/TopBar";

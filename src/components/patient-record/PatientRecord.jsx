@@ -1,3 +1,4 @@
+import { AgGridReact } from "ag-grid-react";
 import { useEffect, useState } from "react";
 import { FhirClient } from "../../utils/FhirClient";
 import { PatientUtil } from "../../utils/PatientUtil";
@@ -34,7 +35,29 @@ export const PatientRecord = ({ selectedPatientId }) => {
     }
   }, [patientConditions, selectedPatientId]);
 
-  if (!patient) return <div>Loading...</div>;
+  if (!patient || !patientConditions) return <div>Loading...</div>;
+
+  const gridData = patientConditions.map((cond) => {
+    return {
+      name: cond.resource.code.text,
+      onset: cond.resource.onsetDateTime,
+      link: `https://pubmed.ncbi.nlm.nih.gov/?term=${cond.resource.code.text}`,
+    };
+  });
+
+  const columnDef = [
+    { field: "name", sortable: true, flex: 3, headerName: "Condition Name", initialSort: "asc" },
+    { field: "onset", sortable: true, flex: 1 },
+    {
+      field: "link",
+      flex: 1,
+      cellRenderer: (params) => (
+        <a href={params.value} target="_blank" rel="noreferrer">
+          View on PubMed <i className="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+        </a>
+      ),
+    },
+  ];
 
   return (
     <div className="patient-record">
@@ -57,31 +80,23 @@ export const PatientRecord = ({ selectedPatientId }) => {
       </div>
       <div className="patient-record__conditions">
         <span className="patient-record__label">Active Conditions</span>
-        {patientConditions &&
-          patientConditions.map((cond) => {
-            return (
-              <div
-                style={{
-                  display: "flex",
-                  marginBlock: "1rem",
-                  borderBlockEnd: "1px solid #efefef",
-                  paddingBlockEnd: "1rem",
-                }}
-              >
-                <div style={{ flex: 2 }}>{cond.resource.code.text}</div>
-                <div style={{ flex: 1 }}>Onset: {cond.resource.onsetDateTime}</div>
-                <div style={{ flex: 1 }}>
-                  <a
-                    href={`https://pubmed.ncbi.nlm.nih.gov/?term=${cond.resource.code.text}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View on PubMed
-                  </a>
-                </div>
-              </div>
-            );
-          })}
+        {patientConditions.length ? (
+          <div className="ag-theme-alpine" style={{ width: "100%", overflow: "hidden" }}>
+            <AgGridReact
+              defaultColDef={{
+                resizable: true,
+                suppressMovable: true,
+                sizeColumnsToFit: true,
+                sortingOrder: ["asc", "desc"],
+              }}
+              columnDefs={columnDef}
+              rowData={gridData}
+              domLayout="autoHeight"
+            />
+          </div>
+        ) : (
+          <div>No active conditions</div>
+        )}
       </div>
     </div>
   );

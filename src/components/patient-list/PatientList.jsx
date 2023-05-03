@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { FhirClient } from "../utils/FhirClient";
-import { PatientCard } from "./patient-card/PatientCard";
+import { FhirClient } from "../../utils/FhirClient";
+import { PatientCard } from "../patient-card/PatientCard";
+
+import "./PatientList.scss";
 
 export const PatientList = ({ setSelectedPatientId }) => {
   const [patients, setPatients] = useState([]);
@@ -21,8 +23,8 @@ export const PatientList = ({ setSelectedPatientId }) => {
   }, [patients]);
 
   return (
-    <div style={{ width: "800px", margin: "0 auto" }}>
-      <ul style={{ padding: 0 }}>
+    <div className="patient-list">
+      <ul>
         {patients.map((patient) => {
           return <PatientCard patient={patient} setSelectedPatientId={setSelectedPatientId} />;
         })}

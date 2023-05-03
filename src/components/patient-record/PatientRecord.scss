@@ -1,16 +1,12 @@
 .patient-record {
-  border: 1px solid #efefef;
-
   &__header {
-    padding: 1rem;
+    padding: 1rem 0;
     font-size: 1.5rem;
-    background-color: #ededed;
   }
 
   &__details {
-    padding-block-start: 1rem;
-    padding-inline: 1rem;
-    font-size: 1.25rem;
+    padding-block: 1rem;
+    font-size: 1.333rem;
     display: flex;
   }
 
@@ -19,14 +15,14 @@
   }
 
   &__label {
-    color: #9f9f9f;
+    color: #777;
     display: block;
-    margin-block-end: 0.25rem;
-    font-size: 0.75rem;
+    margin-block-end: 0.5rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
   }
 
   &__conditions {
-    padding: 1rem;
+    padding-block: 1.5rem;
   }
 }
